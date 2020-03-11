@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    q请输入:<input id="oInput" type="text">
+    <div>
+        <p>我是绑定的输出框</p>
+        <div id="show"></div>
+   </div>
+   <script>
+    //创建一个data对象作为数据层model
+    //输入时,将input的值传给data,data接到值后,触发通知函数,并将值传给show
+    //当data的值被修改时候,触发data的set,将input的值修改,并传值给show
+    const data = {
+        value: '',
+        demo: ''
+    }
+    oInput.oninput = function () {//oninput是定义输入框元素变化后立即发生的事件
+        data.value = this.value;//绑定输入框的value为data.value
+    }
+
+    function observe(data) {//监控对象属性发生变化
+        if (!data || typeof data !== 'object') { //数据为空是或者不为对象时
+            return;
+        }
+        Object.keys(data).forEach(function (ele) {//对data对象的所有属性
+            definePro(data, ele, data[ele]) //形成闭包;
+        })
+
+    }
+    function definePro(data, key, value) {
+        observe(value) //用递归监控value是object的情况.
+        Object.defineProperty(data, key, { //重写每个属性的get，set
+            get() {
+                getProx();
+                return value;
+            },
+            set(newVal) {
+                if(value === newVal){//判断改没改
+                    return ;
+                }
+                setProx();
+                value = newVal;//这一步最重要!!!!形成闭包,返回value就可以，因为已经是在definePro函数中有value变量了
+                update();//通知更新，执行相应的更新函数
+            }
+        })
+
+
+    }
+    function update(){
+        var value = data.value
+        show.innerText = value;//更新数据
+        oInput.value = value;
+    }
+    function getProx() { //相当于一个拦截器，输出get提示
+        console.log('get')
+    }
+    function setProx() {
+        console.log('set')
+    }
+    observe(data)//监听数据
+//对应数组,利用defineProperty监控Array.prototype.    
+// let arr = [];
+// let { push } = Array.prototype;//仅以push为例，导出Array.prototype中的push
+// function update() {
+//     console.log('更新了')
+// }
+// function observe(data) {
+//     Object.defineProperty(Array.prototype, 'push', {
+//         value:  function (...arg) {
+//                 update();//其实也是一种监控，因为只要数组实例用了Push,即会执行这个update函数
+//                 push.apply(this, arg);//绑定this,并且对其使用push
+//             }
+        
+//     })
+// }
+// //也就是说我们对Array.prototype原型对象进行设置，会影响每个普通数组实例arr
+// //因为每个数组实例的方法都是从原型继承的
+// //这样arr使用到push时，就相当于被监控了
+// observe();
+</script>
+</body>
+</html>
