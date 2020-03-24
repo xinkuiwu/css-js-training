@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul class="wrap">
+        <li class="item">1111<button>删除</button></li>
+        <li class="item">2222<button>删除</button></li>
+        <li class="item">3333<button>删除</button></li>
+        <li class="item">4444<button>删除</button></li>
+        <li class="item">5555<button>删除</button></li>
+    </ul>
+    <button class="add">添加子元素</button>
+<script>
+    let oWrap = document.getElementsByClassName('wrap')[0];
+    let oItem = document.getElementsByClassName('item');
+    let oAdd = document.getElementsByClassName('add')[0];
+
+    oWrap.addEventListener('click',function(e){
+        if(e.target && e.target.nodeName.toLowerCase()=='li'){
+            console.log(e.target.childNodes[0].textContent);
+        }
+        if(e.target && e.target.nodeName.toLowerCase()=='button'){
+            oWrap.removeChild(e.target.parentNode);
+        }
+    })
+    oAdd.addEventListener('click',function(){
+        let oLi = document.createElement('li');
+        oLi.setAttribute('class','item');
+        oLi.innerHTML = oItem.length+1 +'<button>删除</button>';
+        oWrap.appendChild(oLi);
+    })
+</script>
+</body>
+</html>
